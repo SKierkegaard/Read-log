@@ -14,38 +14,39 @@ def init_log():
             writer.writerow(["day", "date", "title", "author", "minutes"])
 
 def get_day():
-    with open(LOG_FILE, "r") as f:
-        reader = csv.reader(f)
-        next(reader)
-        a = 0
-        for i in reader:
-            a = i[0]
-        
-        return a
+    with open(LOG_FILE, "r", encoding = "utf-8") as f:
+        lines = f.readlines()
+        if len(lines) <= 1:
+            return 0
 
-def update_log():
-    first_read = input("Esta é sua primeira leitura do dia? [y/n]: ").casefold()
-    day = int(get_day())
+        last_line = lines[-1]
+        return int(last_line.split(",")[0])
 
-    if first_read == "y":
-        day += 1
-        date = datetime.now().strftime("%d-%m-%Y")
-        title = input("Título da leitura: ")
-        author = input("Nome do autor: ")
-        minutes = int(input("Minutos lidos: "))
+def update_log(): 
+    first_read = input("Esta é sua primeira leitura do dia? [y/n]: ").strip().lower()
+    current_day = get_day()
 
-        with open(LOG_FILE, "a", newline = "", encoding = "utf-8") as f:
-            writer = csv.writer(f)
-            writer.writerow([day, date, title, author, minutes])
+    if first_read == 'y':
+        day = current_day + 1
     else:
-        date = datetime.now().strftime("%d-%m-%Y")
-        title = input("Título da leitura: ")
-        author = input("Nome do autor: ")
-        minutes = input("Minutos lidos: ")
+        day = current_day
 
-        with open(LOG_FILE, "a", newline = "", encoding = "utf-8") as f:
-            writer = csv.writer(f)
-            writer.writerow([day, date, title, author, minutes])
+    date = datetime.now().strftime("%d-%m-%Y")
+    title = input("Título da leitura: ")
+    author = input("Nome do autor: ")
+
+    while True:
+        try:
+            minutes = int(input("Minutos lidos: "))
+            break
+        except ValueError:
+            print("Digite um inteiro pra os minutos.")
+
+    with open(LOG_FILE, "a", newline = "", encoding = "utf-8") as f:
+        writer = csv.writer(f)
+        writer.writerow([day, date, title, author, minutes])
+
+    print("Leitura registrada com sucesso!")
 
 def main():
     init_log()
