@@ -15,21 +15,26 @@ def init_log():
 
 def get_day():
     with open(LOG_FILE, "r", encoding = "utf-8") as f:
-        lines = f.readlines()
-        if len(lines) <= 1:
-            return 0
+        reader  = csv.reader(f)
+        date = 0
+        day = 0
+        for i in reader:
+            day = i[0]
+            date = i[1]
 
-        last_line = lines[-1]
-        return int(last_line.split(",")[0])
+        if date == "day":
+            return 0, 0
+        
+        return int(day), date
 
 def update_log(): 
-    first_read = input("Esta é sua primeira leitura do dia? [y/n]: ").strip().lower()
-    current_day = get_day()
-
-    if first_read == 'y':
-        day = current_day + 1
+    get_current_day = get_day()
+    current_date = datetime.now().strftime("%d-%m-%Y")
+    
+    if get_current_day[1] != current_date:
+        day = get_current_day[0] + 1
     else:
-        day = current_day
+        day = get_current_day[0]
 
     date = datetime.now().strftime("%d-%m-%Y")
     title = input("Título da leitura: ")
